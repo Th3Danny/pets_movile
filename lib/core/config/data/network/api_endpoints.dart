@@ -1,6 +1,6 @@
 class ApiEndpoints {
   
-  static const String baseUrl = 'http://localhost:8080/api'; 
+  static const String baseUrl = 'http://192.168.3.17:8080/api'; 
 
   // === AUTH ===
   static const String authenticate = '$baseUrl/auth/authenticate';

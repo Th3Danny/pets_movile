@@ -1,66 +1,93 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'api_endpoints.dart';
 
 class ApiClient {
+  // Singleton pattern
   static final ApiClient _instance = ApiClient._internal();
-  late final Dio dio;
-
   factory ApiClient() => _instance;
+  late final Dio dio;
 
   ApiClient._internal() {
     dio = Dio(
       BaseOptions(
         baseUrl: ApiEndpoints.baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          // No incluyas el Bearer aquí, se añadirá dinámicamente
         },
-        // Importante para APIs con autenticación
-        followRedirects: true,
-        validateStatus: (status) => status! < 500,
+        validateStatus: (status) => status != null && status < 500,
       ),
     );
 
-    // Configuración de interceptores mejorada
+    _setupInterceptors();
+  }
+
+  void _setupInterceptors() {
+    // Interceptor para manejar tokens de forma dinámica
     dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        // Log de la petición
-        print('Sending request to ${options.uri}');
-        print('Headers: ${options.headers}');
-        print('Data: ${options.data}');
-        
-        // Aquí podrías inyectar un token si tienes uno guardado
-        // options.headers['Authorization'] = 'Bearer tu_token';
-        
+      onRequest: (options, handler) async {
+        // Obtener token de tu almacenamiento seguro (ej: SecureStorage)
+        final token = await _getAuthToken();
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+
+        if (kDebugMode) {
+          debugPrint('🌎 [${options.method}] ${options.uri}');
+          debugPrint('📦 Body: ${options.data}');
+        }
         return handler.next(options);
       },
-      onResponse: (response, handler) {
-        print('Received response: ${response.statusCode}');
-        print('Response data: ${response.data}');
-        return handler.next(response);
-      },
-      onError: (DioException e, handler) {
-        print('Dio error occurred:');
-        print('URL: ${e.requestOptions.uri}');
-        print('Method: ${e.requestOptions.method}');
-        print('Error: ${e.message}');
-        print('Response: ${e.response?.data}');
-        print('Status code: ${e.response?.statusCode}');
-        
-        return handler.next(e);
+      onError: (DioException error, handler) async {
+        if (kDebugMode) {
+          debugPrint('🔥 Error [${error.response?.statusCode}] ${error.requestOptions.uri}');
+          debugPrint('📌 Message: ${error.message}');
+        }
+
+        // Manejo de errores 401 (No autorizado)
+        if (error.response?.statusCode == 401) {
+          // Puedes implementar un refresh token aquí
+          return handler.reject(error);
+        }
+
+        return handler.next(error);
       },
     ));
 
-    // Agregar logger para ver las peticiones en consola
-    dio.interceptors.add(LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: true,
-      responseBody: true,
-      error: true,
-    ));
+    // Solo en desarrollo: Logger detallado
+    if (kDebugMode) {
+      dio.interceptors.add(LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+        logPrint: (object) => debugPrint(object.toString()),
+      ));
+    }
+  }
+
+  Future<String?> _getAuthToken() async {
+    // Implementa la lógica para obtener el token de tu almacenamiento
+    // Ejemplo: return await SecureStorage().read('auth_token');
+    return null;
+  }
+
+  // Método helper para manejar errores
+  static dynamic handleResponse(Response response) {
+    if (response.statusCode! >= 200 && response.statusCode! < 300) {
+      return response.data;
+    } else {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+        error: 'Error ${response.statusCode}: ${response.statusMessage}',
+      );
+    }
   }
 }

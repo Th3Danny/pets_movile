@@ -3,7 +3,7 @@ import '../../domian/constants/router_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:pets/auth/ui/page/login_screen.dart';
 import 'package:pets/auth/ui/page/register_screen.dart';
-import 'package:pets/home/ui/page/home_screen.dart';
+import 'package:pets/pets/ui/page/home_screen.dart';
 //import 'package:pets/pets/ui/page/pets_list_screen.dart';
 //import '../../../../screens/pets_list_screen.dart';
 //import '../../../../screens/pet_detail_screen.dart';
