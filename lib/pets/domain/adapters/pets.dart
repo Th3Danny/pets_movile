@@ -51,16 +51,16 @@ class Pets {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // 'id': id,
       'name': name,
       'age': age,
       'species': species,
       'breed': breed,
       'birthDate': birthDate.toIso8601String(),
-      'idUser': owner.toJson(),
-      'petMedication': petMedication?.toJson(),
-      'petDiet': petDiet?.toJson(),
-      'petVaccines': petVaccines?.toJson(),
+      'userId': owner.id,
+      // 'petMedication': petMedication?.toJson(),
+      // 'petDiet': petDiet?.toJson(),
+      // 'petVaccines': petVaccines?.toJson(),
     };
   }
 
@@ -72,4 +72,32 @@ class Pets {
   String toString() {
     return 'Pets{id: $id, name: $name, age: $age, species: $species, breed: $breed, birthDate: $birthDate, owner: $owner, petMedication: $petMedication, petDiet: $petDiet, petVaccines: $petVaccines}';
   }
+
+  Pets copyWith({
+  int? id,
+  String? name,
+  int? age,
+  String? species,
+  String? breed,
+  DateTime? birthDate,
+  User? owner,
+  Medication? petMedication,
+  Diet? petDiet,
+  Vaccine? petVaccines,
+}) {
+  return Pets(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    age: age ?? this.age,
+    species: species ?? this.species,
+    breed: breed ?? this.breed,
+    birthDate: birthDate ?? this.birthDate,
+    owner: owner ?? this.owner,
+    petMedication: petMedication ?? this.petMedication,
+    petDiet: petDiet ?? this.petDiet,
+    petVaccines: petVaccines ?? this.petVaccines,
+  );
 }
+}
+
+

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pets/auth/ui/page/login_screen.dart';
 import 'package:pets/auth/ui/page/register_screen.dart';
 import 'package:pets/pets/ui/page/home_screen.dart';
+import 'package:pets/pets/ui/page/pets_management_screen.dart';
 //import 'package:pets/pets/ui/page/pets_list_screen.dart';
 //import '../../../../screens/pets_list_screen.dart';
 //import '../../../../screens/pet_detail_screen.dart';
@@ -29,6 +30,12 @@ class RouterApp {
       GoRoute(
         path: RouterConstants.home,
         builder: (ctx, state) => const HomeScreen(),
+      ),
+
+      // Ruta de gestión de mascotas
+      GoRoute(
+        path: RouterConstants.petsManagement,
+        builder: (ctx, state) => const PetsManagementScreen(),
       ),
       
       // Ruta de lista de mascotas
@@ -100,7 +107,7 @@ class ErrorScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () => context.go('/'),
+              onPressed: () => context.go('/home'),
               child: const Text('Volver al inicio'),
             ),
           ],
@@ -117,6 +124,9 @@ extension RouterExtension on GoRouter {
   
   // Navegar a lista de mascotas
   void goPetsList() => go('/pets');
+
+  // Navegar a gestión de mascotas
+  void goPetsManagement() => go(RouterConstants.petsManagement);
   
   // Navegar a detalle de mascota
   //void goPetDetail(Pet pet) => go('/pet-detail', extra: pet);

@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:pets/core/router/domian/constants/router_constant.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pets/core/router/domian/constants/router_constant.dart';
+
 class ActionButton extends StatelessWidget {
+  const ActionButton({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      child: ElevatedButton(
+      child: ElevatedButton.icon(
         onPressed: () {
-          context.go(RouterConstants.petsList);
+          // Navegar a la pantalla de gestión de mascotas
+          context.push(RouterConstants.petsManagement);
         },
+        icon: const Icon(Icons.pets),
+        label: const Text('Gestionar tus Mascotas'),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-        ),
-        child: const Text(
-          'Gestionar Mis Mascotas',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          elevation: 2,
         ),
       ),
     );

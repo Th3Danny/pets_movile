@@ -6,7 +6,7 @@ import 'package:pets/pets/ui/widgets/header_section.dart';
 import 'package:pets/pets/ui/widgets/recent_pets_section.dart';
 import 'package:pets/pets/ui/widgets/stats_section.dart';
 import 'package:provider/provider.dart';
-import 'package:pets/pets/ui/widgets/action_button.dart';
+import 'package:pets/pets/ui/widgets/pet_management/action_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
