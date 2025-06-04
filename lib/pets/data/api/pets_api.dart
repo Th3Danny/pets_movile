@@ -96,30 +96,30 @@ Future<Pets> addPet(Pets pet) async {
     print('Respuesta recibida - status: ${response.statusCode}');
     print('Respuesta recibida - data: ${response.data}');
 
-    // Manejo mejorado de la respuesta
+    
     if (response.statusCode == 200 || response.statusCode == 201) {
       if (response.data == null || response.data.toString().isEmpty) {
-        // Si la respuesta está vacía pero la petición fue exitosa
-        return pet; // Retornamos la mascota que enviamos
+       
+        return pet; 
       }
 
       dynamic responseData = response.data;
       
-      // Si es String, intentamos parsear
+      
       if (responseData is String) {
         try {
           responseData = jsonDecode(responseData);
         } catch (e) {
-          // Si no es JSON válido, pero contiene datos útiles
+       
           if (responseData.contains('{') && responseData.contains('}')) {
-            // Intento de extraer datos manualmente
+            
             return _parsePartialResponse(responseData, pet);
           }
-          return pet; // Fallback: retornar la mascota original
+          return pet;
         }
       }
 
-      // Si llegamos aquí, tenemos un Map
+      
       if (responseData is Map<String, dynamic>) {
         if (responseData['data'] != null) {
           return Pets.fromJson(responseData['data']);
@@ -127,7 +127,7 @@ Future<Pets> addPet(Pets pet) async {
         return Pets.fromJson(responseData);
       }
 
-      return pet; // Fallback final
+      return pet; 
     } else {
       throw Exception('Error del servidor: ${response.statusCode}');
     }
@@ -157,7 +157,7 @@ Pets _parsePartialResponse(String response, Pets originalPet) {
   @override
   Future<Pets> updatePet(Pets pet) async {
     try {
-      final response = await _dio.put(
+      final response = await _dio.patch(
         '${ApiEndpoints.pets}/${pet.id}',
         data: pet.toJson(),
       );

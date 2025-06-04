@@ -52,6 +52,7 @@ class GetPetsUseCase {
       return PetsResult.failure(e.toString());
     }
   }
+  
   Future<PetsResult> deletePet(int id) async {
     try {
       await repository.deletePet(id);
