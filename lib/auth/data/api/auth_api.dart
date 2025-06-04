@@ -4,6 +4,7 @@ import 'package:pets/core/config/data/network/api_endpoints.dart';
 import 'package:pets/auth/domain/adapters/user.dart';
 import 'package:pets/auth/domain/adapters/auth_result.dart';
 import 'package:pets/auth/domain/repositories/auth_repository.dart';
+
 import 'package:pets/core/config/data/storage/secure_storage.dart';
 class AuthApi implements AuthRepository {
   final Dio _dio;
@@ -36,9 +37,9 @@ class AuthApi implements AuthRepository {
   @override
   Future<AuthResult> register(String name, String email, String password) async {
     try {
-      // Paso 1: Registrar el usuario
+     
       final registerResponse = await _dio.post(
-        '/users', // Tu endpoint de registro
+        '/users', 
         data: {
           'name': name,
           'email': email,
@@ -46,7 +47,7 @@ class AuthApi implements AuthRepository {
         },
       );
       
-      // Verificar que el registro fue exitoso
+   
       final registerData = registerResponse.data as Map<String, dynamic>;
       if (!(registerData['success'] as bool? ?? false)) {
         return AuthResult.failure(registerData['message']?.toString() ?? _registerError);
@@ -63,7 +64,6 @@ class AuthApi implements AuthRepository {
       return AuthResult.failure('Error inesperado: ${e.toString()}');
     }
   }
-
 
 
   // Método para refrescar token
@@ -112,7 +112,7 @@ class AuthApi implements AuthRepository {
     final user = User.fromJson({
       'id': userId,
       'email': userPayload['email'],
-      'name': userPayload['name'] ?? '', // Si el nombre no está en el token
+      'name': userPayload['name'] ?? '',
     });
     
     // Guardar tokens de forma segura
@@ -147,30 +147,28 @@ class AuthApi implements AuthRepository {
     }
   }
 
-  // // Método para decodificar usuario del JWT
-  // Map<String, dynamic>? decodeUserFromToken(String token) {
-  //   try {
-  //     // Aquí debes implementar la decodificación del JWT
-  //     // Puedes usar la librería dart_jsonwebtoken o jwt_decode
+  // Método para decodificar usuario del JWT (Ejempolo básico)
+  Map<String, dynamic>? decodeUserFromToken(String token) {
+    try {
       
-  //     // Por ahora, un ejemplo básico (implementa según tu necesidad):
-  //     final parts = token.split('.');
-  //     if (parts.length != 3) return null;
+    // Por ahora, un ejemplo básico (implementa según tu necesidad):
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
       
-  //     final payload = parts[1];
-  //     // Decodificar base64 y parsear JSON
-  //     // Esto es un ejemplo simplificado
-      
-  //     return {
-  //       'id': 1, // Extraer del token
-  //       'email': 'user@example.com', // Extraer del token
-  //       'name': 'Usuario', // Si está disponible en el token
-  //     };
-  //   } catch (e) {
-  //     print('Error decodificando token: $e');
-  //     return null;
-  //   }
-  // }
+      final payload = parts[1];
+      // Decodificar base64 y parsear JSON
+    
+      //ejemplo
+      return {
+        'id': 1, // Extraer del token
+        'email': 'user@example.com', // Extraer del token
+        'name': 'Usuario', // Si está disponible en el token
+      };
+    } catch (e) {
+      print('Error decodificando token: $e');
+      return null;
+    }
+  }
 
   @override
   Future<String?> getCurrentUserEmail() async {

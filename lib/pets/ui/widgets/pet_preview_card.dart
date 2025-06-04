@@ -28,7 +28,7 @@ class PetPreviewCard extends StatelessWidget {
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: () {
-          context.go(RouterConstants.petsList);
+          context.go("${RouterConstants.petDetail}/${pet.id}");
         },
       ),
     );

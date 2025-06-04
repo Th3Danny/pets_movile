@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pets/core/router/domian/constants/router_constant.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pets/pets/ui/notifiers/pets_notifiers.dart';
@@ -30,15 +31,19 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(RouterConstants.home);
+            }
+          },
         ),
       ),
       body: Consumer<PetsNotifier>(
         builder: (context, petsNotifier, child) {
           if (petsNotifier.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (petsNotifier.errorMessage != null) {
@@ -64,9 +69,7 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
                   Text(
                     petsNotifier.errorMessage!,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.red.shade500,
-                    ),
+                    style: TextStyle(color: Colors.red.shade500),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -82,9 +85,10 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
 
           return RefreshIndicator(
             onRefresh: () => petsNotifier.fetchPets(),
-            child: pets.isEmpty
-                ? _buildEmptyState(context)
-                : _buildPetsList(context, pets, petsNotifier),
+            child:
+                pets.isEmpty
+                    ? _buildEmptyState(context)
+                    : _buildPetsList(context, pets, petsNotifier),
           );
         },
       ),
@@ -101,11 +105,7 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.pets_outlined,
-              size: 100,
-              color: Colors.grey.shade400,
-            ),
+            Icon(Icons.pets_outlined, size: 100, color: Colors.grey.shade400),
             const SizedBox(height: 24),
             Text(
               'No tienes mascotas registradas',
@@ -118,10 +118,7 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
             const SizedBox(height: 12),
             Text(
               'Agrega tu primera mascota para comenzar',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade500,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
@@ -141,7 +138,11 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
     );
   }
 
-  Widget _buildPetsList(BuildContext context, List<Pets> pets, PetsNotifier notifier) {
+  Widget _buildPetsList(
+    BuildContext context,
+    List<Pets> pets,
+    PetsNotifier notifier,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: pets.length,
@@ -157,10 +158,7 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
   }
 
   void _showAddPetDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddEditPetDialog(),
-    );
+    showDialog(context: context, builder: (context) => AddEditPetDialog());
   }
 
   void _showEditPetDialog(BuildContext context, Pets pet) {
@@ -170,39 +168,45 @@ class PetsManagementScreenState extends State<PetsManagementScreen> {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context, Pets pet, PetsNotifier notifier) {
+  void _showDeleteConfirmation(
+    BuildContext context,
+    Pets pet,
+    PetsNotifier notifier,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar Mascota'),
-        content: Text('¿Estás seguro de que quieres eliminar a ${pet.name}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              await notifier.deletePet(pet.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${pet.name} ha sido eliminado'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Eliminar Mascota'),
+            content: Text(
+              '¿Estás seguro de que quieres eliminar a ${pet.name}?',
             ),
-            child: const Text('Eliminar'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await notifier.deletePet(pet.id);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${pet.name} ha sido eliminado'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Eliminar'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
-
